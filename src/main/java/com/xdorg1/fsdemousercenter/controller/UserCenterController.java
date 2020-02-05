@@ -4,6 +4,7 @@ import com.xdorg1.fsdemousercenter.model.User;
 import com.xdorg1.fsdemousercenter.service.UserService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +32,11 @@ public class UserCenterController {
         }
         return userService.getUserList();
 
+    }
+
+    @PostMapping("/adduser")
+    public String addUser(User user){
+        return userService.addUser(user);
     }
 
 }

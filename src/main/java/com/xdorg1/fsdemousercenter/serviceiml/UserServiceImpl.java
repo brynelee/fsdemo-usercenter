@@ -26,4 +26,17 @@ public class UserServiceImpl implements UserService {
             throw e;
         }
     }
+
+    @Override
+    public String addUser(User user){
+        try {
+
+            int i = userMapper.addUser(user);
+            return "添加成功" + i + "条数据";
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+    }
 }

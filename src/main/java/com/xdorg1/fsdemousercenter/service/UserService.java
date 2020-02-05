@@ -10,4 +10,6 @@ public interface UserService {
 
     List<User> getUserList();
 
+    String addUser(User user);
+
 }
