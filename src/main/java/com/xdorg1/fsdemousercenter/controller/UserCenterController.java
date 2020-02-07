@@ -1,9 +1,11 @@
 package com.xdorg1.fsdemousercenter.controller;
 
+import com.xdorg1.fsdemousercenter.model.LoginPayload;
 import com.xdorg1.fsdemousercenter.model.User;
 import com.xdorg1.fsdemousercenter.service.UserService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,10 +30,15 @@ public class UserCenterController {
         Iterator<User> it = userList.iterator();
         while (!it.hasNext()){
             User user = it.next();
-            logger.info("the user id " + user.user_id + " and user name is " + user.username);
+            logger.info("the user id " + user.getUserId() + " and user name is " + user.getUsername());
         }
-        return userService.getUserList();
+        return userList;
 
+    }
+
+    @PostMapping("/login")
+    public LoginPayload queryForLogin(String username, String password){
+        return userService.queryForLogin(username, password);
     }
 
     @PostMapping("/adduser")
