@@ -1,7 +1,9 @@
 package com.xdorg1.fsdemousercenter.model;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,8 +23,11 @@ public interface UserMapper {
     @Select("select * from usertable where username=#{username}")
     User getUser(String username);
 
-    @Select("select token from usertable where user_id=#{user_id}")
-    String getUserToken(int user_id);
+    @Select("select token from usertable where username=#{username}")
+    String getUserToken(String username);
+
+    @Update("update usertable set token=null where username=#{username}")
+    int removeUserToken(String username);
 
     @Insert("update usertable set token=#{user_token} where user_id=#{user_id}")
     int setUserToken(int user_id, String user_token);

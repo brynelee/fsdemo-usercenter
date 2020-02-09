@@ -1,19 +1,18 @@
 package com.xdorg1.fsdemousercenter.controller;
 
 import com.xdorg1.fsdemousercenter.model.LoginPayload;
+import com.xdorg1.fsdemousercenter.model.LogoutPayload;
 import com.xdorg1.fsdemousercenter.model.User;
 import com.xdorg1.fsdemousercenter.service.UserService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Iterator;
 import java.util.List;
 import org.slf4j.Logger;
 
+@CrossOrigin
 @RestController
 public class UserCenterController {
 
@@ -22,7 +21,7 @@ public class UserCenterController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("/getuserlist")
+    @RequestMapping("/api/getuserlist")
     public List<User> getUserList()
     {
         List<User> userList = userService.getUserList();
@@ -36,12 +35,19 @@ public class UserCenterController {
 
     }
 
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public LoginPayload queryForLogin(String username, String password){
+        logger.info("request content: username is " + username + ", password is " + password);
         return userService.queryForLogin(username, password);
     }
 
-    @PostMapping("/adduser")
+    @PostMapping("/api/logout")
+    public LogoutPayload logout(String username, String token){
+        logger.info("/api/logout called with username is " + username + ", token is " + token);
+        return userService.logout(username, token);
+    }
+
+    @PostMapping("/api/adduser")
     public String addUser(User user){
         return userService.addUser(user);
     }

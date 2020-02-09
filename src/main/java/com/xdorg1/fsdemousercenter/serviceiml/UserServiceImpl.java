@@ -1,9 +1,6 @@
 package com.xdorg1.fsdemousercenter.serviceiml;
 
-import com.xdorg1.fsdemousercenter.model.LoginPayload;
-import com.xdorg1.fsdemousercenter.model.User;
-import com.xdorg1.fsdemousercenter.model.UserMapper;
-import com.xdorg1.fsdemousercenter.model.UserToken;
+import com.xdorg1.fsdemousercenter.model.*;
 import com.xdorg1.fsdemousercenter.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,18 +63,25 @@ public class UserServiceImpl implements UserService {
         payload.errorCode = LoginPayload.LOGIN_SUCCESS;
         payload.username = username;
 
-        User user;
+        User user = null;
 
         logger.info("incoming login request: username is " + username + " and password is " + password);
 
         //check if use exist
-        try {
+        /*try {
 
             user = userMapper.getUser(username);
 
         }catch(Exception e){
 
-            //todo: user not exist
+            payload.errorCode = LoginPayload.USER_NOT_EXIST;
+            payload.errorMessage = LoginPayload.MSG_USER_NOT_EXIST;
+            return payload;
+        }*/
+
+        user = userMapper.getUser(username);
+        if(user == null){
+            logger.info("the user " + username + " was not found in the database, will return error to the client.");
             payload.errorCode = LoginPayload.USER_NOT_EXIST;
             payload.errorMessage = LoginPayload.MSG_USER_NOT_EXIST;
             return payload;
@@ -129,9 +133,41 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    //todo
-    public Boolean userAuthentication(String token){
-        return true;
+    //todo: add logout function support
+    public LogoutPayload logout(String username, String token){
+        logger.info("incoming logout request with user: " + username + ", and token " + token);
+        LogoutPayload payload = new LogoutPayload();
+        payload.errorCode = LogoutPayload.TOKEN_ILLEGAL;
+
+        if (userAuthentication(username, token)){
+            logger.info("logout request token checking passed, username " + username + ", will remove token from the database.");
+            //remove the token
+            userMapper.removeUserToken(username);
+            //return success code
+            payload.errorCode = LogoutPayload.LOGOUT_SUCCESS;
+
+        }else{
+
+            logger.info("logout request token checking failed, username " + username + ", will remove token from the database but return TOKEN_ILLEGAL payload information.");
+            userMapper.removeUserToken(username);
+
+        }
+
+        return payload;
+
+    }
+
+    // todo: add token verification logic
+    public Boolean userAuthentication(String username, String token){
+
+        String tokenInDB = userMapper.getUserToken(username);
+
+        if (tokenInDB == null){
+            logger.info("Didn't got token for user " + username);
+            return false;
+        }
+
+        return tokenInDB.equals(token);
     }
 /*
     private Boolean ifTokenExist(int user_id){

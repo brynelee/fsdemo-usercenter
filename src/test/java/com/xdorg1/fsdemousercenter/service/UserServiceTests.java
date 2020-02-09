@@ -1,6 +1,7 @@
 package com.xdorg1.fsdemousercenter.service;
 
 import com.xdorg1.fsdemousercenter.model.LoginPayload;
+import com.xdorg1.fsdemousercenter.model.LogoutPayload;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +33,16 @@ public class UserServiceTests {
         Assert.assertEquals(LoginPayload.PASSWORD_INCORRECT, payload.errorCode);
         Assert.assertNull(payload.userToken);
         Assert.assertNotNull(payload.errorMessage);
+    }
+
+    @Test
+    void logoutTest(){
+        String username = "dahai";
+        String password = "666666";
+        LoginPayload login_payload = userService.queryForLogin(username, password);
+        String token = login_payload.userToken;
+
+        LogoutPayload payload = userService.logout(username, token);
+        Assert.assertEquals(LogoutPayload.LOGOUT_SUCCESS, payload.errorCode);
     }
 }
