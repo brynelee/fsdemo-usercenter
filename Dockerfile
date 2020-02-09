@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 COPY pom.xml .
 RUN mvn -B -e -C -T 1C org.apache.maven.plugins:maven-dependency-plugin:3.1.1:go-offline
 COPY . .
-RUN mvn -B -e -T 1C verify
+RUN mvn -B -e -T 1C -Dmaven.test.skip=true package
 
 # package without maven
 # FROM openjdk:8-jdk-alpine
