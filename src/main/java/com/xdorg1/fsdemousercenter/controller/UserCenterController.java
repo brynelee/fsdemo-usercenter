@@ -21,7 +21,7 @@ public class UserCenterController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("/api/getuserlist")
+    @RequestMapping("/usercenter/getuserlist")
     public List<User> getUserList()
     {
         List<User> userList = userService.getUserList();
@@ -35,19 +35,19 @@ public class UserCenterController {
 
     }
 
-    @PostMapping("/api/login")
+    @PostMapping("/usercenter/login")
     public LoginPayload queryForLogin(String username, String password){
         logger.info("request content: username is " + username + ", password is " + password);
         return userService.queryForLogin(username, password);
     }
 
-    @PostMapping("/api/logout")
+    @PostMapping("/usercenter/logout")
     public LogoutPayload logout(String username, String token){
-        logger.info("/api/logout called with username is " + username + ", token is " + token);
+        logger.info("/usercenter/logout called with username is " + username + ", token is " + token);
         return userService.logout(username, token);
     }
 
-    @PostMapping("/api/adduser")
+    @PostMapping("/usercenter/adduser")
     public String addUser(User user){
         return userService.addUser(user);
     }
