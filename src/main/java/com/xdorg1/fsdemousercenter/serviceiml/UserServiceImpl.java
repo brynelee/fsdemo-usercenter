@@ -133,7 +133,6 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    //todo: add logout function support
     public LogoutPayload logout(String username, String token){
         logger.info("incoming logout request with user: " + username + ", and token " + token);
         LogoutPayload payload = new LogoutPayload();
