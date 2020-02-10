@@ -105,6 +105,15 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- added by Xiaodong start for skipping test if without db support -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			<!-- added by Xiaodong end for skipping test if without db support -->
 		</plugins>
 	</build>
 
