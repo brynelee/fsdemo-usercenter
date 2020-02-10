@@ -1,0 +1,34 @@
+version: '2'
+services:
+  fsdemo-frontend:
+    image:   xdorg1/fsdemo-frontend:latest
+    ports:
+      - "8080:80"
+  fsdemo-usercenter:
+    image: xdorg1/fsdemo-usercenter
+    ports:
+      - "8081:8081"
+    environment:
+      SPRINGDATASOURCEURL: "jdbc:mysql://mysqldb:3306/usercenter?setUnicode=true&characterEncoding=utf8"
+      USERNAME: "root"
+      PASSWORD: "time4@FUN"
+  transactionagentservice:
+    image: xdorg1/transactionagentservice
+    ports:
+      - "8082:8082"
+  mysqldb:
+    image: mysql:8.0.19
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "time4@FUN"
+      MYSQL_USER: 'root'
+      MYSQL_PASS: 'time4@FUN'
+    restart: always
+    volumes:
+#      - "./db:/var/lib/mysql"
+#      - "./conf/my.cnf:/etc/my.cnf"
+      - "./init:/docker-entrypoint-initdb.d/"
+
+
+

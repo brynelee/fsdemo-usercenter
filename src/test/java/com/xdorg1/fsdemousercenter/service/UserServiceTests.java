@@ -45,4 +45,5 @@ public class UserServiceTests {
         LogoutPayload payload = userService.logout(username, token);
         Assert.assertEquals(LogoutPayload.LOGOUT_SUCCESS, payload.errorCode);
     }
+
 }

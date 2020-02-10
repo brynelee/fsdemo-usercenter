@@ -3,4 +3,4 @@
 echo "********************************************************"
 echo "Starting Transaction Agent Service ..."
 echo "********************************************************"
-java -jar /usr/src/app/fsdemo-usercenter-0.0.1-SNAPSHOT.jar
+java -Dspring.datasource.url=$SPRINGDATASOURCEURL -jar /usr/src/app/fsdemo-usercenter-0.0.1-SNAPSHOT.jar
