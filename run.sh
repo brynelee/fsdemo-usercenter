@@ -7,4 +7,4 @@ java -Ddebug=$DEBUG_MODE \
      -Dserver.port=$SERVERPORT \
      -Dspring.datasource.url=$SPRINGDATASOURCEURL \
      -Dspring.datasource.username=$DBUSERNAME \
-     -Dspring.datasource.password=$DBPASSWORD -jar /usr/local/usercenter/@project.build.finalName@.jar
+     -Dspring.datasource.password=$DBPASSWORD -jar /usr/local/usercenter/fsdemo-usercenter-0.0.1-SNAPSHOT.jar
