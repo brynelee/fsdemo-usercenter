@@ -9,9 +9,11 @@ services:
     ports:
       - "8081:8081"
     environment:
+      DEBUG_MODE: "true"
+      SERVERPORT: "8081"
       SPRINGDATASOURCEURL: "jdbc:mysql://mysqldb:3306/usercenter?setUnicode=true&characterEncoding=utf8"
-      USERNAME: "root"
-      PASSWORD: "time4@FUN"
+      DBUSERNAME: "root"
+      DBPASSWORD: "time4@FUN"
   transactionagentservice:
     image: xdorg1/transactionagentservice
     ports:
