@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transactionagentservice
+  labels:
+    app: transactionagentservice
+    version: v1
+  namespace: fsdemo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transactionagentservice
+  template:
+    metadata:
+      labels:
+        app: transactionagentservice
+        version: v1
+    spec:
+      containers:
+        - name: transactionagentservice
+          image: xdorg1/transactionagentservice
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8082
+          resources: {}
+          env:
+            - name: SERVERPORT
+              value: "8082"
+            - name: DEBUG_MODE
+              value: "false"
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: transactionagentservice
+  labels:
+    app: transactionagentservice
+    service: transactionagentservice
+  namespace: fsdemo
+spec:
+  #  type: NodePort
+  selector:
+    app: transactionagentservice
+  ports:
+    - port: 8082
+      name: http
+

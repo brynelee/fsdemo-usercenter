@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fsdemo-usercenter
+  labels:
+    app: fsdemo-usercenter
+    version: v1
+  namespace: fsdemo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fsdemo-usercenter
+  template:
+    metadata:
+      labels:
+        app: fsdemo-usercenter
+        version: v1
+    spec:
+      containers:
+        - name: fsdemo-usercenter
+          image: xdorg1/fsdemo-usercenter
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          resources: {}
+          env:
+            - name: SERVERPORT
+              value: "8081"
+            - name: DEBUG_MODE
+              value: "true"
+            - name: SPRINGDATASOURCEURL
+              value: "jdbc:mysql://mysqldb.fsdemo:3306/usercenter?setUnicode=true&characterEncoding=utf8"
+            - name: DBUSERNAME
+              value: "root"
+            - name: DBPASSWORD
+              value: "time4@FUN"
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fsdemo-usercenter
+  labels:
+    app: fsdemo-usercenter
+    service: fsdemo-usercenter
+  namespace: fsdemo
+spec:
+#  type: NodePort
+  selector:
+    app: fsdemo-usercenter
+  ports:
+    - port: 8081
+      name: http
+
