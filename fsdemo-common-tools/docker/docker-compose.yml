@@ -12,7 +12,7 @@ services:
       DEBUG_MODE: "true"
       SERVERPORT: "8081"
       SPRINGDATASOURCEURL: "jdbc:mysql://mysqldb:3306/usercenter?setUnicode=true&characterEncoding=utf8"
-      DBUSERNAME: "root"
+      DBUSERNAME: "xiaodong"
       DBPASSWORD: "time4@FUN"
   transactionagentservice:
     image: xdorg1/transactionagentservice
@@ -27,7 +27,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: "time4@FUN"
-      MYSQL_USER: 'root'
+      MYSQL_USER: 'xiaodong'
       MYSQL_PASS: 'time4@FUN'
     restart: always
     volumes:

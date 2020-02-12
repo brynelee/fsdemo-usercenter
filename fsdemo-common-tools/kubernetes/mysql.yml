@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqldb
+  labels:
+    app: mysqldb
+    service: mysqldb
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+  selector:
+    app: mysqldb
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysqldb
+  labels:
+    app: mysqldb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysqldb
+  template:
+    metadata:
+      labels:
+        app: mysqldb
+    spec:
+      initContainers:
+        - name: mysql-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-root-pwd
+          - name: MYSQL_TEST_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-test-user-pwd
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-app-user-pwd
+          command:
+            - sh
+            - "-c"
+            - |
+              set -ex
+              rm -rf /var/lib/mysql/lost+found
+              cat > /docker-entrypoint-initdb.d/a-mysql.sql <<EOF
+              USE mysql;
+              ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '$MYSQL_ROOT_PASSWORD';
+              ALTER USER 'xiaodong'@'%' IDENTIFIED WITH mysql_native_password BY '$MYSQL_PASSWORD';
+              GRANT ALL PRIVILEGES ON usercenter.* TO 'xiaodong'@'%' WITH GRANT OPTION;
+              GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+              flush privileges;
+              EOF
+              cat > /docker-entrypoint-initdb.d/b-usercenter.sql <<EOF
+              USE usercenter;
+              SET FOREIGN_KEY_CHECKS = 0;
+              DROP TABLE IF EXISTS usertable;
+              CREATE TABLE usertable (
+              username varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+              userpassword varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+              user_id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+              token varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+              token_creation_time datetime(0) DEFAULT NULL COMMENT 'Token创建时间',
+              PRIMARY KEY (user_id) USING BTREE,
+              UNIQUE INDEX username(username) USING BTREE
+              ) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+              INSERT INTO usertable VALUES ('xiaodong', '123456', 1, '4po7F0CRjUd4w7Th9Ng2RlPhQMV4h6BZ1eB29wsWRBAhzUiYsvfJxoIsFYvk7cV3BhiQAyXgeKksUgMIMHLzeMwDBIpdvU7xB0P74Ro3kBQZtj7uPJcEhpouUp3dZN3WRGHM39Ai3D8ujnqLIP9uI3FynRDGUeqQrwYD4c5GymeDgLu4qZaro4IvgOhkZixKR6Kh0VCylNRi5JD0AqsDweHQVP8ZC97e7mEQlf8t2y75zEWEVRJ8tYsbQzc3kJkV', NULL);
+              INSERT INTO usertable VALUES ('dahai', '666666', 2, NULL, NULL);
+              INSERT INTO usertable VALUES ('hesheng', '888888', 3, 'ecLoIQ7necFnKs9Kmrxn95HwQLNLGs3K4yN2Fse2xcDn1Xkfe3eBdqk7NuFStR8kytwLJKJIFXBAXGaM56tLANYgaqYEJJtDEthlrY9CP5S9a1Bca4BIVYxzCpiDTs6Tm02nawY9nbRTt4a6IUNSoGjjn0xsalkaIKpqPHTzBmubCulCki1poB781XUeTSMRzk3DIzGkdJzhkxO0ScdKIxH0mNq8ndozyqh3S0fU7z0K95QuYdawv6HXECow1IOZ', NULL);
+              INSERT INTO usertable VALUES ('xiaoming', '999999', 4, NULL, NULL);
+              INSERT INTO usertable VALUES ('xiaohu', '000000', 6, NULL, NULL);
+              SET FOREIGN_KEY_CHECKS = 1;
+              commit;
+              EOF
+          volumeMounts:
+            - name: nfs-pv
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d
+      containers:
+        - image: mysql:8.0
+          name: mysqldb
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-root-pwd
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-app-user-pwd
+          - name: MYSQL_USER
+            value: xiaodong
+          - name: MYSQL_DATABASE
+            value: usercenter
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: nfs-pv
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d
+#            - name: mysql-config
+#              mountPath: /etc/mysql/conf.d
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - MYSQL_PWD="${MYSQL_ROOT_PASSWORD}"
+                - mysql -h 127.0.0.1 -u root -e "SELECT 1"
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - MYSQL_PWD="${MYSQL_ROOT_PASSWORD}"
+                - mysql -h 127.0.0.1 -u root -e "SELECT 1"
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+      volumes:
+        - name: nfs-pv
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+        - name: mysql-initdb
+          emptyDir: {}
+#        - name: mysql-config
+#          configMap:
+#            name: mysql-config

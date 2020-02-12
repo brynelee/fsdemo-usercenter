@@ -11,7 +11,7 @@ ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'time4@FUN';
 
 CREATE DATABASE If NOT EXISTS usercenter CHARACTER SET utf8mb4;
 CREATE USER 'xiaodong'@'localhost' IDENTIFIED BY 'time4@FUN';
-GRANT all ON usercenter.* TO 'xiaodong'@'localhost';
+GRANT all ON usercenter.* TO 'xiaodong'@'%';
 GRANT all ON usercenter.* TO 'root'@'%';
 
 USE usercenter;

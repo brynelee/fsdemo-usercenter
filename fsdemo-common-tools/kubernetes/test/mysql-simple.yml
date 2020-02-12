@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqldb
+  labels:
+    app: mysqldb
+    service: mysqldb
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+  selector:
+    app: mysqldb
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysqldb
+  labels:
+    app: mysqldb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysqldb
+  template:
+    metadata:
+      labels:
+        app: mysqldb
+    spec:
+      containers:
+        - image: mysql:8.0
+          name: mysqldb
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-root-pwd
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-app-user-pwd
+          - name: MYSQL_USER
+            value: xiaodong
+          - name: MYSQL_DATABASE
+            value: usercenter
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: nfs-pv
+              mountPath: /var/lib/mysql
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - MYSQL_PWD="${MYSQL_ROOT_PASSWORD}"
+                - mysql -h 127.0.0.1 -u root -e "SELECT 1"
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - MYSQL_PWD="${MYSQL_ROOT_PASSWORD}"
+                - mysql -h 127.0.0.1 -u root -e "SELECT 1"
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+      volumes:
+        - name: nfs-pv
+          persistentVolumeClaim:
+            claimName: mysql-pvc
