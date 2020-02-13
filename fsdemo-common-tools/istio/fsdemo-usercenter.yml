@@ -32,7 +32,7 @@ spec:
             - name: SPRINGDATASOURCEURL
               value: "jdbc:mysql://mysqldb.fsdemo:3306/usercenter?setUnicode=true&characterEncoding=utf8"
             - name: DBUSERNAME
-              value: "root"
+              value: "xiaodong"
             - name: DBPASSWORD
               value: "time4@FUN"
       restartPolicy: Always

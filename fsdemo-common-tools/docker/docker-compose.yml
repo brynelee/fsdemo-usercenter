@@ -21,6 +21,9 @@ services:
     environment:
       DEBUG_MODE: "true"
       SERVERPORT: "8082"
+      SPRINGDATASOURCEURL: "jdbc:mysql://mysqldb:3306/transproddb?setUnicode=true&characterEncoding=utf8"
+      DBUSERNAME: "xiaodong"
+      DBPASSWORD: "time4@FUN"
   mysqldb:
     image: mysql:8.0.19
     ports:

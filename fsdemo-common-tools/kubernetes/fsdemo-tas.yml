@@ -28,6 +28,12 @@ spec:
               value: "8082"
             - name: DEBUG_MODE
               value: "false"
+            - name: SPRINGDATASOURCEURL
+              value: "jdbc:mysql://mysqldb:3306/transproddb?setUnicode=true&characterEncoding=utf8"
+            - name: DBUSERNAME
+              value: "xiaodong"
+            - name: DBPASSWORD
+              value: "time4@FUN"
       restartPolicy: Always
 
 ---
