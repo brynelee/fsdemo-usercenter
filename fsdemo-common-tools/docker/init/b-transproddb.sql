@@ -15,11 +15,10 @@
 */
 
 SET NAMES utf8mb4;
+
+USE transproddb;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- ----------------------------
--- Table structure for product
--- ----------------------------
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product`  (
   `product_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '产品ID',
@@ -34,9 +33,7 @@ CREATE TABLE `product`  (
   PRIMARY KEY (`product_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
--- ----------------------------
--- Records of product
--- ----------------------------
+
 INSERT INTO `product` VALUES (1, 'win1', 500000, 0, '天天赢1号', '000001', 'retail-personal', 1.50, 0);
 INSERT INTO `product` VALUES (2, 'win2', 100000, 0, '日日盈1号', '000002', 'retail-private', 2.00, 0);
 INSERT INTO `product` VALUES (3, 'win3', 500000, 0, '天天赢2号', '000003', 'retail-sme', 1.20, 0);
