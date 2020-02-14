@@ -16,6 +16,21 @@ spec:
         app: fsdemo-usercenter
         version: v1
     spec:
+      initContainers:
+        - name: fsdemo-usercenter-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
+          command: ['sh', '-c']
+          args:
+          - echo Prepare to apollo initialize..;
+            until nc -w 1 -z $DBSERVER $DBPORT;
+            do echo USERCENTER Waiting for database initialization to complete..; sleep 5; done;
+            echo database is ready.;
       containers:
         - name: fsdemo-usercenter
           image: xdorg1/fsdemo-usercenter
@@ -28,12 +43,16 @@ spec:
               value: "8081"
             - name: DEBUG_MODE
               value: "true"
-            - name: SPRINGDATASOURCEURL
-              value: "jdbc:mysql://mysqldb:3306/usercenter?setUnicode=true&characterEncoding=utf8"
+            - name: JDBCURL
+              value: "usercenter?setUnicode=true&characterEncoding=utf8"
             - name: DBUSERNAME
               value: "xiaodong"
             - name: DBPASSWORD
               value: "time4@FUN"
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
       restartPolicy: Always
 
 ---

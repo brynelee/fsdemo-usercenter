@@ -113,8 +113,8 @@ spec:
               commit;
               EOF
           volumeMounts:
-            - name: nfs-pv
-              mountPath: /var/lib/mysql
+#            - name: nfs-pv
+#              mountPath: /var/lib/mysql
             - name: mysql-initdb
               mountPath: /docker-entrypoint-initdb.d
       containers:
@@ -140,7 +140,7 @@ spec:
             - containerPort: 3306
               name: mysql
           volumeMounts:
-            - name: nfs-pv
+            - name: nfs-pv-istio
               mountPath: /var/lib/mysql
             - name: mysql-initdb
               mountPath: /docker-entrypoint-initdb.d
@@ -169,9 +169,9 @@ spec:
             successThreshold: 1
             failureThreshold: 3
       volumes:
-        - name: nfs-pv
+        - name: nfs-pv-istio
           persistentVolumeClaim:
-            claimName: mysql-pvc
+            claimName: mysql-pvc-istio
         - name: mysql-initdb
           emptyDir: {}
 #        - name: mysql-config

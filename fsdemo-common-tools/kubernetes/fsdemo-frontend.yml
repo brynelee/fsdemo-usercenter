@@ -16,6 +16,29 @@ spec:
         app: fsdemo-frontend
         version: v1
     spec:
+      initContainers:
+        - name: fsdemo-frontend-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: UCSERVER
+              value: "fsdemo-usercenter"
+            - name: UCPORT
+              value: "8081"
+            - name: TASSERVER
+              value: "transactionagentservice"
+            - name: TASPORT
+              value: "8082"
+          command: ['sh', '-c']
+          args:
+            - echo Prepare to fsdemo-usercenter initialize..;
+              until nc -w 1 -z $UCSERVER $UCPORT;
+              do echo Waiting for usercenter initialization to complete..; sleep 5; done;
+              echo usercenter is ready.;
+            - echo Prepare to transactionagentservice initialize..;
+              until nc -w 1 -z $TASSERVER $TASPORT;
+              do echo Waiting for transactionagentservice initialization to complete..; sleep 5; done;
+              echo transactionagentservice is ready.;
       containers:
         - name: fsdemo-frontend
           image: xdorg1/fsdemo-frontend

@@ -16,6 +16,21 @@ spec:
         app: transactionagentservice
         version: v1
     spec:
+      initContainers:
+        - name: fsdemo-tas-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
+          command: ['sh', '-c']
+          args:
+            - echo Prepare to apollo initialize..;
+              until nc -w 1 -z $DBSERVER $DBPORT;
+              do echo TAS Waiting for database initialization to complete..; sleep 5; done;
+              echo database is ready.;
       containers:
         - name: transactionagentservice
           image: xdorg1/transactionagentservice
@@ -28,12 +43,16 @@ spec:
               value: "8082"
             - name: DEBUG_MODE
               value: "false"
-            - name: SPRINGDATASOURCEURL
-              value: "jdbc:mysql://mysqldb:3306/transproddb?setUnicode=true&characterEncoding=utf8"
+            - name: JDBCURL
+              value: "transproddb?setUnicode=true&characterEncoding=utf8"
             - name: DBUSERNAME
               value: "xiaodong"
             - name: DBPASSWORD
               value: "time4@FUN"
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
       restartPolicy: Always
 
 ---
