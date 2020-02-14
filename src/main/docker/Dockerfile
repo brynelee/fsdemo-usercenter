@@ -5,7 +5,5 @@ FROM xdorg1/javacommon
 RUN mkdir -p /usr/local/usercenter
 ADD @project.build.finalName@.jar /usr/local/usercenter/
 ADD run.sh run.sh
-ADD entrypoint.sh entrypoint.sh
 RUN chmod +x run.sh
-RUN chmod +x entrypoint.sh
-CMD ./entrypoint.sh -d mysqldb:3306 -c ./run.sh
+CMD ./run.sh

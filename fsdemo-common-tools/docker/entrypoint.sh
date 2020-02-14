@@ -9,7 +9,7 @@
 # history  : alpha
 #******************************************************************************
 
-: ${SLEEP_SECOND:=3}
+: ${SLEEP_SECOND:=5}
 
 wait_for() {
     echo Waiting for $1 to listen on $2...

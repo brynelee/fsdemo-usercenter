@@ -15,7 +15,5 @@ FROM xdorg1/javacommon
 WORKDIR /usr/src/app
 COPY --from=0 /usr/src/app/target/*.jar .
 ADD run.sh run.sh
-ADD entrypoint.sh entrypoint.sh
 RUN chmod +x run.sh
-RUN chmod +x entrypoint.sh
-CMD ./entrypoint.sh -d mysqldb:3306 -c ./run.sh
+CMD ./run.sh

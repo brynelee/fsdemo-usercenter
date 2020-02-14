@@ -1,9 +1,12 @@
-version: '2'
+version: '3'
 services:
   fsdemo-frontend:
     image:   xdorg1/fsdemo-frontend:latest
     ports:
       - "8080:80"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: /entrypoint.sh -d fsdemo-usercenter:8081,transactionagentservice:8082 -c "nginx -g 'daemon off;'"
   fsdemo-usercenter:
     image: xdorg1/fsdemo-usercenter
     ports:
@@ -11,9 +14,14 @@ services:
     environment:
       DEBUG_MODE: "true"
       SERVERPORT: "8081"
-      SPRINGDATASOURCEURL: "jdbc:mysql://mysqldb:3306/usercenter?setUnicode=true&characterEncoding=utf8"
+      JDBCURL: "usercenter?setUnicode=true&characterEncoding=utf8"
       DBUSERNAME: "xiaodong"
       DBPASSWORD: "time4@FUN"
+      DBSERVER: "mysqldb"
+      DBPORT: "3306"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: "/entrypoint.sh -d mysqldb:3306 -c ./run.sh;"
   transactionagentservice:
     image: xdorg1/transactionagentservice
     ports:
@@ -21,9 +29,14 @@ services:
     environment:
       DEBUG_MODE: "true"
       SERVERPORT: "8082"
-      SPRINGDATASOURCEURL: "jdbc:mysql://mysqldb:3306/transproddb?setUnicode=true&characterEncoding=utf8"
+      JDBCURL: "transproddb?setUnicode=true&characterEncoding=utf8"
       DBUSERNAME: "xiaodong"
       DBPASSWORD: "time4@FUN"
+      DBSERVER: "mysqldb"
+      DBPORT: "3306"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: "/entrypoint.sh -d mysqldb:3306 -c ./run.sh"
   mysqldb:
     image: mysql:8.0.19
     ports:
@@ -34,9 +47,10 @@ services:
       MYSQL_PASS: 'time4@FUN'
     restart: always
     volumes:
+      - "./init:/docker-entrypoint-initdb.d/"
 #      - "./db:/var/lib/mysql"
 #      - "./conf/my.cnf:/etc/my.cnf"
-      - "./init:/docker-entrypoint-initdb.d/"
+
 
 
 
