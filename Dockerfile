@@ -10,7 +10,8 @@ RUN mvn -B -e -T 1C -Dmaven.test.skip=true package
 # FROM openjdk:8-jdk-alpine
 # RUN  apk update && apk upgrade && apk add netcat-openbsd && apk add curl
 # use FROM bryne/spmiabaseimage image to fasten the build process
-FROM bryne/spmiabaseimage
+# FROM bryne/spmiabaseimage
+FROM xdorg1/javacommon
 WORKDIR /usr/src/app
 COPY --from=0 /usr/src/app/target/*.jar .
 ADD run.sh run.sh
