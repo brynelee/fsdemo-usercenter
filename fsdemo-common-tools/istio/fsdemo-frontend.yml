@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: fsdemo-frontend
-          image: xdorg1/fsdemo-frontend
+          image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-frontend
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: fsdemo-usercenter
-          image: xdorg1/fsdemo-usercenter
+          image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-usercenter
           imagePullPolicy: Always
           ports:
             - containerPort: 8081

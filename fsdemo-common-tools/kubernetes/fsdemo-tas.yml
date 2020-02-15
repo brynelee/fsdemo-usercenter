@@ -33,7 +33,7 @@ spec:
               echo database is ready.;
       containers:
         - name: transactionagentservice
-          image: xdorg1/transactionagentservice
+          image: registry.cn-hangzhou.aliyuncs.com/xdorg1/transactionagentservice
           imagePullPolicy: Always
           ports:
             - containerPort: 8082
