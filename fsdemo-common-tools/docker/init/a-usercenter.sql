@@ -12,8 +12,10 @@ CREATE USER 'xiaodong'@'%' IDENTIFIED BY 'time4@FUN';
 ALTER USER 'xiaodong'@'%' IDENTIFIED WITH mysql_native_password BY 'time4@FUN';
 CREATE DATABASE If NOT EXISTS usercenter CHARACTER SET utf8mb4;
 CREATE DATABASE If NOT EXISTS transproddb CHARACTER SET utf8mb4;
+CREATE DATABASE IF NOT EXISTS productprice CHARACTER SET utf8mb4;
 GRANT ALL PRIVILEGES ON usercenter.* TO 'xiaodong'@'%' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON transproddb.* TO 'xiaodong'@'%' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON productprice.* TO 'xiaodong'@'%' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
 flush privileges;
 

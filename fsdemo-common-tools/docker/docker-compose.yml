@@ -37,6 +37,13 @@ services:
     volumes:
       - "./entrypoint.sh:/entrypoint.sh"
     command: "/entrypoint.sh -d mysqldb:3306 -c ./run.sh"
+  fsdemo-priceservice:
+    image: xdorg1/fsdemo-priceservice
+    ports:
+      - "8083:8083"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: "/entrypoint.sh -d mysqldb:3306 -c fsdemo-priceservice"
   mysqldb:
     image: mysql:8.0.19
     ports:

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fsdemo-priceservice
+  labels:
+    app: fsdemo-priceservice
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fsdemo-priceservice
+  template:
+    metadata:
+      labels:
+        app: fsdemo-priceservice
+        version: v1
+    spec:
+      initContainers:
+        - name: fsdemo-priceservice-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
+          command: ['sh', '-c']
+          args:
+            - echo Prepare to apollo initialize..;
+              until nc -w 1 -z $DBSERVER $DBPORT;
+              do echo TAS Waiting for database initialization to complete..; sleep 5; done;
+              echo database is ready.;
+      containers:
+        - name: fsdemo-priceservice
+          image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-priceservice
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8083
+          resources: {}
+          env:
+            - name: SERVERPORT
+              value: "8083"
+            - name: DEBUG_MODE
+              value: "false"
+            - name: JDBCURL
+              value: "priceservice?setUnicode=true&characterEncoding=utf8"
+            - name: DBUSERNAME
+              value: "xiaodong"
+            - name: DBPASSWORD
+              value: "time4@FUN"
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fsdemo-priceservice
+  labels:
+    app: fsdemo-priceservice
+    service: fsdemo-priceservice
+spec:
+  #  type: NodePort
+  selector:
+    app: fsdemo-priceservice
+  ports:
+    - port: 8083
+      name: http
+
