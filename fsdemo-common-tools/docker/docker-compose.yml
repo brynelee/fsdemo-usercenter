@@ -1,14 +1,14 @@
 version: '3'
 services:
   fsdemo-frontend:
-    image:   xdorg1/fsdemo-frontend:latest
+    image:   registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-frontend:latest
     ports:
       - "8080:80"
     volumes:
       - "./entrypoint.sh:/entrypoint.sh"
     command: /entrypoint.sh -d fsdemo-usercenter:8081,transactionagentservice:8082 -c "nginx -g 'daemon off;'"
   fsdemo-usercenter:
-    image: xdorg1/fsdemo-usercenter
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-usercenter
     ports:
       - "8081:8081"
     environment:
@@ -23,7 +23,7 @@ services:
       - "./entrypoint.sh:/entrypoint.sh"
     command: "/entrypoint.sh -d mysqldb:3306 -c ./run.sh;"
   transactionagentservice:
-    image: xdorg1/transactionagentservice
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/transactionagentservice
     ports:
       - "8082:8082"
     environment:
@@ -38,7 +38,7 @@ services:
       - "./entrypoint.sh:/entrypoint.sh"
     command: "/entrypoint.sh -d mysqldb:3306 -c ./run.sh"
   fsdemo-priceservice:
-    image: xdorg1/fsdemo-priceservice
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-priceservice
     ports:
       - "8083:8083"
     volumes:
