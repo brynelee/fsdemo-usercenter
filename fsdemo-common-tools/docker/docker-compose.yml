@@ -1,13 +1,13 @@
 version: '3'
 services:
-  fsdemo-gateway:
-    image:   registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-gateway:latest
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "./entrypoint.sh:/entrypoint.sh"
-    command: /entrypoint.sh -d fsdemo-usercenter:8081,transactionagentservice:8082,fsdemo-priceservice:8083 -c "nginx-debug -g 'daemon off;'"
+#  fsdemo-gateway:
+#    image:   registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-gateway:latest
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    volumes:
+#      - "./entrypoint.sh:/entrypoint.sh"
+#    command: /entrypoint.sh -d fsdemo-usercenter:8081,transactionagentservice:8082,fsdemo-priceservice:8083 -c "nginx-debug -g 'daemon off;'"
   fsdemo-frontend:
     image:   registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-frontend:latest
     ports:
