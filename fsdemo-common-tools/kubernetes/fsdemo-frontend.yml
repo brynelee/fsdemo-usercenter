@@ -64,4 +64,4 @@ spec:
   ports:
     - port: 8080
       name: http
-      targetPort: 80
+      targetPort: 8080
