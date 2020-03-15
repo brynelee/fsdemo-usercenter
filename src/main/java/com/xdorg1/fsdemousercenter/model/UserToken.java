@@ -49,6 +49,10 @@ public class UserToken {
         return false;
     }
 
+    public String toString(){
+        return "UserToken: { \n access_token: " + access_token + ",\n token_type: " + token_type + ",\n expires_in: " + expires_in + ",\n scope: " + scope + ",\n jti: " + jti + "\n}";
+    }
+
     //临时使用，在使用authsrv之后就不用这个函数了
     //length用户要求产生字符串的长度
     private static String createTokenString(){

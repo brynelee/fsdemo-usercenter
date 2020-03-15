@@ -3,6 +3,7 @@ package com.xdorg1.fsdemousercenter.controller;
 import com.xdorg1.fsdemousercenter.model.LoginPayload;
 import com.xdorg1.fsdemousercenter.model.LogoutPayload;
 import com.xdorg1.fsdemousercenter.model.User;
+import com.xdorg1.fsdemousercenter.model.UserToken;
 import com.xdorg1.fsdemousercenter.service.UserService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Iterator;
 import java.util.List;
 import org.slf4j.Logger;
+import org.springframework.web.client.RestTemplate;
 
 @CrossOrigin
 @RestController
@@ -33,6 +35,23 @@ public class UserCenterController {
         }
         return userList;
 
+    }
+
+    /**
+     * 1. got input (redirect GET) from authsrv: http://fsdemo-usercenter:8081/usercenter/auth?code=KGZ0X3&state=test1
+     * 2. send POST to authsrv: curl -v -X POST --user webclient2:time4@FUN http://fsdemo-authsrv:8084/oauth/token
+     * -H "content-type: application/x-www-form-urlencoded"
+     * -d "code=KGZ0X3&grant_type=authorization_code&redirect_uri=http://fsdemo-usercenter:8081/usercenter/auth&scope=read"
+     * 3. got response from authsrv:
+     * {"access_token":"3119b61e-a39a-4a09-a084-34b83891187a","token_type":"bearer","expires_in":7199,"scope":"read"}
+     * 4. save token and respond to the client
+     * @return
+     */
+
+    @GetMapping("/usercenter/auth")
+    public UserToken authCodeRedirect(String code, String state){
+        logger.info("request at /usercenter/auth with parameters: " + code + " and " + state);
+        return userService.postForAuthToken(code, state);
     }
 
     @PostMapping("/usercenter/login")

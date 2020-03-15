@@ -5,7 +5,15 @@ import com.xdorg1.fsdemousercenter.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import javax.xml.ws.http.HTTPException;
 import java.util.List;
@@ -15,6 +23,14 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    private static final String CLIENT_ID_FSDEMO_FRONTEND = "fsdemo-frontend";
+    private static final String CLIENT_ID_FSDEMOAPP = "fsdemoapp";
+    private static final String CLIENT_CREDENTIAL = "time4@FUN";
+    private static final String AUTHSRV_TOKEN_URL = "http://fsdemo-authsrv:8084/oauth/token";
+    private static final String GRANT_TYPE_CODE = "authorization_code";
+    private static final String REDIRECT_URI = "http://fsdemo-usercenter:8081/usercenter/auth";
+
 
     @Autowired
     private UserMapper userMapper;
@@ -56,7 +72,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    //todo
    public LoginPayload queryForLogin(String username, String password){
 
         LoginPayload payload = new LoginPayload();
@@ -131,6 +146,59 @@ public class UserServiceImpl implements UserService {
 
        return payload;
 
+    }
+
+    /**
+     * send POST to authsrv: curl -v -X POST --user fsdemo-frontend:time4@FUN http://fsdemo-authsrv:8084/oauth/token
+     *      * -H "content-type: application/x-www-form-urlencoded"
+     *      * -d "code=KGZ0X3&grant_type=authorization_code&redirect_uri=http://fsdemo-usercenter:8081/usercenter/auth&scope=read"
+     *      * 3. got response from authsrv:
+     *      * {"access_token":"3119b61e-a39a-4a09-a084-34b83891187a","token_type":"bearer","expires_in":7199,"scope":"read"}
+     * @param code
+     * @param state
+     * @return
+     */
+
+    public UserToken postForAuthToken(String code, String state){
+
+        logger.info("UserServiceImpl postForAuthToken() with code: " + code + " and state: " + state);
+
+        if (code == null || state == null){
+            logger.error("UserServiceImpl postForAuthToken() got null input of code or state.");
+            return null;
+        }
+
+        //designed by Xiaodong using state to differentiate from request originated from fsdemo-frontend or from fsdemoapp
+        String client_id = (state.equals(CLIENT_ID_FSDEMO_FRONTEND))? CLIENT_ID_FSDEMO_FRONTEND : CLIENT_ID_FSDEMOAPP;
+        String client_credential = CLIENT_CREDENTIAL;
+
+        logger.info("UserServiceImpl postForAuthToken() with client_id " + client_id + " and client_credential " + client_credential);
+
+        //set the basic auth
+        RestTemplateBuilder builder = new RestTemplateBuilder();
+        RestTemplate restTemplate = builder.basicAuthentication(client_id, client_credential).build();
+
+        //set the header
+        //MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        //headers.add("content-type", "application/x-www-form-urlencoded");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        //set the parameters in POST body
+        MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<>();
+        paramMap.add("code", code);
+        paramMap.add("grant_type", GRANT_TYPE_CODE);
+        paramMap.add("redirect_uri", REDIRECT_URI);
+        paramMap.add("scope", "all");
+
+        HttpEntity<Object> requestEntity = new HttpEntity<Object>(paramMap, headers);
+
+        //ResponseEntity<String> response = restTemplate.postForObject(AUTHSRV_TOKEN_URL, requestEntity, String.class);
+        UserToken userToken = restTemplate.postForObject(AUTHSRV_TOKEN_URL, requestEntity, UserToken.class);
+
+        logger.info("UserServiceImpl postForAuthToken() got POST response from authsrv: " + userToken);
+
+        return userToken;
     }
 
     public LogoutPayload logout(String username, String token){
