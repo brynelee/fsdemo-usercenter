@@ -13,7 +13,7 @@ public class UserTokenTests {
     @Test
     void testTokenCreation(){
 
-        UserToken ut = new UserToken();
+        UserToken ut = UserToken.getTokenFromAuthSrvByClientMode();
 
         System.out.println(ut.getUserToken());
     }

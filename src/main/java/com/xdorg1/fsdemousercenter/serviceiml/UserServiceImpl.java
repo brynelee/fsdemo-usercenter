@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
            if(userToken == null || userToken.length() <= 0){
 
                //password is correct and user token does not exist, need to create one
-               UserToken newToken = new UserToken();
+               UserToken newToken = UserToken.getTokenFromAuthSrvByClientMode();
                payload.userToken = newToken.getUserToken();
 
                //save token to database back
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
                if (existingToken.isExpired()){
 
                    //token is expired, need to create a new one
-                   UserToken newToken = new UserToken();
+                   UserToken newToken = UserToken.getTokenFromAuthSrvByClientMode();
                    payload.userToken = newToken.getUserToken();
 
                    //save token to database back
