@@ -6,4 +6,6 @@ spring:
     username: xiaodong
     password: time4@FUN
     driver-class-name: com.mysql.cj.jdbc.Driver
+  thymeleaf:
+    cache: false
 debug: true

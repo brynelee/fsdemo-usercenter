@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" th:href="@{/css/default.css}"/>
+    <meta charset="UTF-8"/>
+    <title>Insert title here</title>
+    <!--<script>
+        localStorage.setItem('token', ${message});
+    </script>-->
+
+    <script th:inline="javascript">
+        alert([[${message}]]);
+        localStorage.setItem('token', [[${message}]]);
+    </script>
+</head>
+<body>
+<div class="hello">
+    <p th:text="${message}"></p>
+</div>
+</body>
+</html>

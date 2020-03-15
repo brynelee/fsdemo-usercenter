@@ -48,11 +48,13 @@ public class UserCenterController {
      * @return
      */
 
-    @GetMapping("/usercenter/auth")
+    /*@GetMapping("/usercenter/auth")
     public UserToken authCodeRedirect(String code, String state){
         logger.info("request at /usercenter/auth with parameters: " + code + " and " + state);
         return userService.postForAuthToken(code, state);
-    }
+    }*/
+
+
 
     @PostMapping("/usercenter/login")
     public LoginPayload queryForLogin(String username, String password){
