@@ -9,3 +9,12 @@ spring:
   thymeleaf:
     cache: false
 debug: true
+fsdemo:
+  fsdemo-frontend: localhost:8080
+  oauth:
+    client_id_fsdemo_frontend: fsdemo-frontend
+    client_id_fsdemoapp: fsdemoapp
+    client_credential: time4@FUN
+    tokenurl: http://fsdemo-authsrv:8084/oauth/token
+    grant_type_code: authorization_code
+    redirect_uri: http://fsdemo-usercenter:8081/usercenter/auth

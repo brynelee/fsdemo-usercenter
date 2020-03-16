@@ -5,6 +5,7 @@ import com.xdorg1.fsdemousercenter.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,9 @@ public class AuthController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Value("${fsdemo.fsdemo-frontend}")
+    private String fsdemo_frontend;
+
     @Autowired
     private UserService userService;
 
@@ -24,7 +28,7 @@ public class AuthController {
     public String authCodeRedirect(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletRequest request){
         logger.info("request at /usercenter/auth with parameters: " + code + " and " + state);
         UserToken userToken =  userService.postForAuthToken(code, state);
-        request.setAttribute("message", userToken.getUserToken());
-        return "index";
+        String callbackURL = "redirect:http://" + this.fsdemo_frontend + "/#/key?token=" + userToken.getUserToken();
+        return callbackURL;
     }
 }

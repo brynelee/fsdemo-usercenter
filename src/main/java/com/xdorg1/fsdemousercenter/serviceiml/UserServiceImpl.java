@@ -5,6 +5,7 @@ import com.xdorg1.fsdemousercenter.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,12 +25,18 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    private static final String CLIENT_ID_FSDEMO_FRONTEND = "fsdemo-frontend";
-    private static final String CLIENT_ID_FSDEMOAPP = "fsdemoapp";
-    private static final String CLIENT_CREDENTIAL = "time4@FUN";
-    private static final String AUTHSRV_TOKEN_URL = "http://fsdemo-authsrv:8084/oauth/token";
-    private static final String GRANT_TYPE_CODE = "authorization_code";
-    private static final String REDIRECT_URI = "http://fsdemo-usercenter:8081/usercenter/auth";
+    @Value("${fsdemo.oauth.client_id_fsdemo_frontend}")
+    private String CLIENT_ID_FSDEMO_FRONTEND;
+    @Value("${fsdemo.oauth.client_id_fsdemoapp}")
+    private String CLIENT_ID_FSDEMOAPP;
+    @Value("${fsdemo.oauth.client_credential}")
+    private String CLIENT_CREDENTIAL;
+    @Value("${fsdemo.oauth.tokenurl}")
+    private String AUTHSRV_TOKEN_URL;
+    @Value("${fsdemo.oauth.grant_type_code}")
+    private String GRANT_TYPE_CODE;
+    @Value("${fsdemo.oauth.redirect_uri}")
+    private String REDIRECT_URI;
 
 
     @Autowired
