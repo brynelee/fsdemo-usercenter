@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Themeleaf demo purpose by Xiaodong
+ */
+
 @Controller
 @RequestMapping(value = "/hello")
 public class HelloController {
