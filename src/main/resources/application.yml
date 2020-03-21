@@ -10,7 +10,7 @@ spring:
     cache: false
 debug: true
 fsdemo:
-  fsdemo-frontend: localhost:8080
+  fsdemo-frontend: localhost:8060
   oauth:
     client_id_fsdemo_frontend: fsdemo-frontend
     client_id_fsdemoapp: fsdemoapp
