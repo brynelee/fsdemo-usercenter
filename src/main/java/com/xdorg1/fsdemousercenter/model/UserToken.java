@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -25,6 +28,7 @@ public class UserToken {
     public Integer expires_in = 0;
     public String scope = null;
     public String jti = null;
+    public String refresh_token=null;
 
     private static int token_length = 256;
 
@@ -49,8 +53,10 @@ public class UserToken {
         return false;
     }
 
+    public String getRefresh_token() {return refresh_token;}
+
     public String toString(){
-        return "UserToken: { \n access_token: " + access_token + ",\n token_type: " + token_type + ",\n expires_in: " + expires_in + ",\n scope: " + scope + ",\n jti: " + jti + "\n}";
+        return "UserToken: { \n access_token: " + access_token + ",\n token_type: " + token_type + ",\n expires_in: " + expires_in + ",\n refresh_token: " + refresh_token + ",\n scope: " + scope + ",\n jti: " + jti + "\n}";
     }
 
     //临时使用，在使用authsrv之后就不用这个函数了
@@ -109,4 +115,47 @@ public class UserToken {
         return userToken;
 
     }
+
+    static public UserToken getTokenFromAuthSrvByPasswordMode(String username, String password){
+
+        MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String, Object>();
+        paramMap.add("grant_type", "password");
+        paramMap.add("scope", "write");
+        paramMap.add("username", username);
+        paramMap.add("password", password);
+
+        logger.info("getTokenFromAuthSrvByPasswordMode() will send POST with payload: " + paramMap);
+
+        //set the header
+        //MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        //headers.add("content-type", "application/x-www-form-urlencoded");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<Object> requestEntity = new HttpEntity<Object>(paramMap, headers);
+
+        RestTemplateBuilder builder = new RestTemplateBuilder();
+
+        restTemplate = builder.basicAuthentication(CLIENT_ID, CLIENT_CREDENTIAL).build();
+
+        String response = restTemplate.postForObject(AUTHSRV_TOKEN_URL, requestEntity, String.class);
+
+        logger.info("Got POST response from fsdemo-authsrv /oauth/token: " + response);
+
+        ObjectMapper mapper = new ObjectMapper();
+        UserToken userToken = null;
+
+        try {
+            userToken = mapper.readValue(response, UserToken.class);
+            //复杂情形例如List或者Array等，可以使用下面的方法来进行反实例化
+            //userToken = mapper.readValue(response, new TypeReference<UserToken>(){});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return userToken;
+
+    }
+
+
 }
