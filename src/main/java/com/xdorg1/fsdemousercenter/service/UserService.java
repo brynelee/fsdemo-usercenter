@@ -1,9 +1,6 @@
 package com.xdorg1.fsdemousercenter.service;
 
-import com.xdorg1.fsdemousercenter.model.LoginPayload;
-import com.xdorg1.fsdemousercenter.model.LogoutPayload;
-import com.xdorg1.fsdemousercenter.model.User;
-import com.xdorg1.fsdemousercenter.model.UserToken;
+import com.xdorg1.fsdemousercenter.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,4 +20,6 @@ public interface UserService {
     LogoutPayload logout(String username, String token);
 
     Boolean userAuthentication(String username, String token);
+
+    UserEntity getUserInfoByUsername(String username);
 }

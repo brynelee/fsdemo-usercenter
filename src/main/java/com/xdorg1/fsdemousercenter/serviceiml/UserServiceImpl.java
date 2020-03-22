@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
         logger.info("the user information is " + user);
 
         //user exist, check password
-       if (password.equals(user.getUserpassword())){
+       if (password.equals(user.getPassword())){
 
            //password is correct, check if token exist
            String userToken = user.getUserToken();
@@ -242,6 +242,13 @@ public class UserServiceImpl implements UserService {
         }
 
         return tokenInDB.equals(token);
+    }
+
+    public UserEntity getUserInfoByUsername(String username){
+        logger.info("getUserInfoByUsername called with username: {}", username);
+        UserEntity userEntity = userMapper.getUserEntity(username);
+        logger.info("getUserInfoByUsername called and got userEntity: {}", userEntity);
+        return userEntity;
     }
 /*
     private Boolean ifTokenExist(int user_id){

@@ -23,6 +23,22 @@ public interface UserMapper {
     @Select("select * from usertable where username=#{username}")
     User getUser(String username);
 
+
+    /**
+     *     private String username;
+     *     private String password;
+     *     private Integer user_id;
+     *     private String mobile;
+     *     private String email;
+     *     private Integer status;
+     *     private String personal_id;
+     * @param username
+     * @return
+     */
+
+    @Select("select username, password, user_id, mobile, email, status, personal_id from usertable where username=#{username}")
+    UserEntity getUserEntity(String username);
+
     @Select("select token from usertable where username=#{username}")
     String getUserToken(String username);
 

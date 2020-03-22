@@ -2,6 +2,7 @@ package com.xdorg1.fsdemousercenter.service;
 
 import com.xdorg1.fsdemousercenter.model.LoginPayload;
 import com.xdorg1.fsdemousercenter.model.LogoutPayload;
+import com.xdorg1.fsdemousercenter.model.UserEntity;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,15 @@ public class UserServiceTests {
         Assert.assertEquals(LoginPayload.PASSWORD_INCORRECT, payload.errorCode);
         Assert.assertNull(payload.userToken);
         Assert.assertNotNull(payload.errorMessage);
+    }
+
+    @Test
+    void testGetUserInfoByUsername(){
+        String username = "dahai";
+
+        UserEntity userEntity = userService.getUserInfoByUsername(username);
+        Assert.assertEquals("dahai_88889999@sina.com", userEntity.getEmail());
+        Assert.assertEquals("110101197812128889", userEntity.getPersonal_id());
     }
 
     @Test

@@ -12,12 +12,12 @@ public class User {
         this.username = username;
     }
 
-    public String getUserpassword() {
-        return userpassword;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUserpassword(String userpassword) {
-        this.userpassword = userpassword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public int getUserId() {
@@ -34,16 +34,36 @@ public class User {
 
     public void setToken_creation_time(Date creation_time){ token_creation_time = creation_time; }
 
+    public String getMobile(){return mobile;}
+
+    public void setMobile(String mobile) {this.mobile = mobile;}
+
+    public Integer getStatus() { return status; }
+
+    public void setStatus(Integer status ) {this.status = status;}
+
+    public String getEmail() { return email; }
+
+    public void setEmail(String email ) { this.email = email; }
+
+    public String getPersonal_id() { return personal_id; }
+
+    public void setPersonal_id(String personal_id) { this.personal_id = personal_id; }
+
     @Override
     public String toString() {
-        return "User [id=" + user_id + ", name=" + username + ", password=" + userpassword + ", user_token=" + token + "]" ;
+        return "User [id=" + user_id + ", name=" + username + ", password=" + password + ", user_token=" + token + ", Email=" + email + "]" ;
     }
 
     private String username;
-    private String userpassword;
+    private String password;
     private Integer user_id;
     private String token;
     private Date token_creation_time;
+    private String mobile;
+    private Integer status;
+    private String email;
+    private String personal_id;
 
 }
 

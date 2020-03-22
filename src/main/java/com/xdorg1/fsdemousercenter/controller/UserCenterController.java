@@ -1,9 +1,6 @@
 package com.xdorg1.fsdemousercenter.controller;
 
-import com.xdorg1.fsdemousercenter.model.LoginPayload;
-import com.xdorg1.fsdemousercenter.model.LogoutPayload;
-import com.xdorg1.fsdemousercenter.model.User;
-import com.xdorg1.fsdemousercenter.model.UserToken;
+import com.xdorg1.fsdemousercenter.model.*;
 import com.xdorg1.fsdemousercenter.service.UserService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +68,12 @@ public class UserCenterController {
     @PostMapping("/usercenter/adduser")
     public String addUser(User user){
         return userService.addUser(user);
+    }
+
+    @GetMapping("/usercenter/user")
+    public UserEntity getUserInfo(String username){
+        logger.info("/usercenter/user called with username: {}", username);
+        return userService.getUserInfoByUsername(username);
     }
 
 }
