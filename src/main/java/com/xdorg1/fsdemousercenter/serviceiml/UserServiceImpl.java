@@ -250,6 +250,14 @@ public class UserServiceImpl implements UserService {
         logger.info("getUserInfoByUsername called and got userEntity: {}", userEntity);
         return userEntity;
     }
+
+    public void setUserToken(String username, String token){
+
+        logger.info("setUserToken of user {} with token: {}", username, token);
+
+        userMapper.setUserToken(userMapper.getUserId(username), token);
+
+    }
 /*
     private Boolean ifTokenExist(int user_id){
 

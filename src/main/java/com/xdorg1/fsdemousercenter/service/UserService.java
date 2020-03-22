@@ -22,4 +22,6 @@ public interface UserService {
     Boolean userAuthentication(String username, String token);
 
     UserEntity getUserInfoByUsername(String username);
+
+    void setUserToken(String username, String token);
 }

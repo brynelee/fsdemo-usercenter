@@ -2,6 +2,7 @@ package com.xdorg1.fsdemousercenter.controller;
 
 import com.xdorg1.fsdemousercenter.model.UserToken;
 import com.xdorg1.fsdemousercenter.service.UserService;
+import com.xdorg1.fsdemousercenter.util.JWTUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,10 @@ public class AuthController {
     public String authCodeRedirect(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletRequest request){
         logger.info("request at /usercenter/auth with parameters: " + code + " and " + state);
         UserToken userToken =  userService.postForAuthToken(code, state);
-        String callbackURL = "redirect:http://" + this.fsdemo_frontend + "/#/key?token=" + userToken.getUserToken();
+        String token = userToken.getUserToken();
+        String username = JWTUtil.getUserInfo(token);
+        userService.setUserToken(username, token);
+        String callbackURL = "redirect:http://" + this.fsdemo_frontend + "/#/key?token=" + token + "&username=" + username;
         return callbackURL;
     }
 }
