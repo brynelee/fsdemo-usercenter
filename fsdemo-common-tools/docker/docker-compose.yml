@@ -7,7 +7,7 @@ services:
       - "443:443"
     volumes:
       - "./entrypoint.sh:/entrypoint.sh"
-    command: /entrypoint.sh -d fsdemo-usercenter:8081,transactionagentservice:8082,fsdemo-priceservice:8083 -c "nginx-debug -g 'daemon off;'"
+    command: /entrypoint.sh -d fsdemo-spcgtw:8060 -c "nginx-debug -g 'daemon off;'"
   fsdemo-frontend:
     image:   registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-frontend:latest
     ports:
@@ -15,12 +15,22 @@ services:
     volumes:
       - "./entrypoint.sh:/entrypoint.sh"
     command: /entrypoint.sh -d fsdemo-usercenter:8081,transactionagentservice:8082 -c "nginx-debug -g 'daemon off;'"
+  fsdemo-spcgtw:
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-spcgtw:latest
+    ports:
+      - "8060:8060"
+    environment:
+      DEBUG_MODE: "false"
+      SERVERPORT: "8060"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: "/entrypoint.sh -d fsdemo-usercenter:8081,transactionagentservice:8082,fsdemo-priceservice:8083,fsdemo-authsrv:8084 -c ./run.sh;"
   fsdemo-usercenter:
     image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-usercenter
     ports:
       - "8081:8081"
     environment:
-      DEBUG_MODE: "true"
+      DEBUG_MODE: "false"
       SERVERPORT: "8081"
       JDBCURL: "usercenter?setUnicode=true&characterEncoding=utf8"
       DBUSERNAME: "xiaodong"
@@ -35,7 +45,7 @@ services:
     ports:
       - "8082:8082"
     environment:
-      DEBUG_MODE: "true"
+      DEBUG_MODE: "false"
       SERVERPORT: "8082"
       JDBCURL: "transproddb?setUnicode=true&characterEncoding=utf8"
       DBUSERNAME: "xiaodong"
@@ -52,6 +62,21 @@ services:
     volumes:
       - "./entrypoint.sh:/entrypoint.sh"
     command: "/entrypoint.sh -d mysqldb:3306 -c fsdemo-priceservice"
+  fsdemo-authsrv:
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-authsrv
+    ports:
+      - "8084:8084"
+    environment:
+      DEBUG_MODE: "true"
+      SERVERPORT: "8084"
+      JDBCURL: "oauth2db?setUnicode=true&characterEncoding=utf8"
+      DBUSERNAME: "xiaodong"
+      DBPASSWORD: "time4@FUN"
+      DBSERVER: "mysqldb"
+      DBPORT: "3306"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: "/entrypoint.sh -d mysqldb:3306 -c ./run.sh;"
   mysqldb:
     image: mysql:8.0.19
     ports:
