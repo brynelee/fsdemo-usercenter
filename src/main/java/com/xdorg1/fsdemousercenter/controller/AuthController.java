@@ -19,8 +19,8 @@ public class AuthController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${fsdemo.fsdemo-frontend}")
-    private String fsdemo_frontend;
+    @Value("${fsdemo.fsdemo-gateway}")
+    private String fsdemo_gateway;
 
     @Autowired
     private UserService userService;
@@ -32,7 +32,7 @@ public class AuthController {
         String token = userToken.getUserToken();
         String username = JWTUtil.getUserInfo(token);
         userService.setUserToken(username, token);
-        String callbackURL = "redirect:http://" + this.fsdemo_frontend + "/#/key?token=" + token + "&username=" + username;
+        String callbackURL = "redirect:http://" + this.fsdemo_gateway + "/#/key?token=" + token + "&username=" + username;
         return callbackURL;
     }
 }

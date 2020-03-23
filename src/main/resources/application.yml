@@ -10,7 +10,7 @@ spring:
     cache: false
 debug: true
 fsdemo:
-  fsdemo-frontend: localhost:8060
+  fsdemo-gateway: fsdemo-spcgtw:8060 # should use fsdemo-gateway.fsdemo.com in k8s env.
   oauth:
     client_id_fsdemo_frontend: fsdemo-frontend
     client_id_fsdemoapp: fsdemoapp
