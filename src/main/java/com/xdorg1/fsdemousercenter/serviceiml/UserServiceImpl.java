@@ -215,6 +215,13 @@ public class UserServiceImpl implements UserService {
 
         if (userAuthentication(username, token)){
             logger.info("logout request token checking passed, username " + username + ", will remove token from the database.");
+
+/*            try {
+                logoutAuthsrv(username, token);
+            }catch(Exception e){
+                e.printStackTrace();
+            }*/
+
             //remove the token
             userMapper.removeUserToken(username);
             //return success code
@@ -229,6 +236,40 @@ public class UserServiceImpl implements UserService {
 
         return payload;
 
+    }
+
+    private void logoutAuthsrv(String username, String token){
+
+        logger.info("sending POST /logout to fsdemo_authsrv for user: {}", username);
+
+        MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String, Object>();
+        paramMap.add("username", username);
+        paramMap.add("access_token", token);
+
+        //RestTemplateBuilder builder = new RestTemplateBuilder();
+
+        //restTemplate = builder.basicAuthentication(CLIENT_ID, CLIENT_CREDENTIAL).build();
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        String response = restTemplate.postForObject("http://fsdemo-authsrv:8084/logout", paramMap, String.class);
+
+        logger.info("Got POST response from fsdemo-authsrv /logout: " + response);
+
+        /*
+        ObjectMapper mapper = new ObjectMapper();
+        UserToken userToken = null;
+
+        try {
+            userToken = mapper.readValue(response, UserToken.class);
+            //复杂情形例如List或者Array等，可以使用下面的方法来进行反实例化
+            //userToken = mapper.readValue(response, new TypeReference<UserToken>(){});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return userToken;
+        */
     }
 
     // todo: add token verification logic
