@@ -40,7 +40,7 @@ spec:
           resources: {}
           env:
             - name: SERVERPORT
-              value: "8081"
+              value: "8084"
             - name: DEBUG_MODE
               value: "true"
             - name: JDBCURL
