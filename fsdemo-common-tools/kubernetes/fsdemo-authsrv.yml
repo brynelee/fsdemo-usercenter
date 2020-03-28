@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fsdemo-authsrv
+  labels:
+    app: fsdemo-authsrv
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fsdemo-authsrv
+  template:
+    metadata:
+      labels:
+        app: fsdemo-authsrv
+        version: v1
+    spec:
+      initContainers:
+        - name: fsdemo-authsrv-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
+          command: ['sh', '-c']
+          args:
+          - echo Prepare to apollo initialize..;
+            until nc -w 1 -z $DBSERVER $DBPORT;
+            do echo AUTHSRV Waiting for database initialization to complete..; sleep 5; done;
+            echo database is ready.;
+      containers:
+        - name: fsdemo-authsrv
+          image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-authsrv
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8084
+          resources: {}
+          env:
+            - name: SERVERPORT
+              value: "8081"
+            - name: DEBUG_MODE
+              value: "true"
+            - name: JDBCURL
+              value: "oauth2db?setUnicode=true&characterEncoding=utf8"
+            - name: DBUSERNAME
+              value: "xiaodong"
+            - name: DBPASSWORD
+              value: "time4@FUN"
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fsdemo-authsrv
+  labels:
+    app: fsdemo-authsrv
+    service: fsdemo-authsrv
+spec:
+#  type: NodePort
+  selector:
+    app: fsdemo-authsrv
+  ports:
+    - port: 8084
+      name: http
+
