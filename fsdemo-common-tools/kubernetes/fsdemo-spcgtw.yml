@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fsdemo-spcgtw
+  labels:
+    app: fsdemo-spcgtw
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fsdemo-spcgtw
+  template:
+    metadata:
+      labels:
+        app: fsdemo-spcgtw
+        version: v1
+    spec:
+      initContainers:
+        - name: fsdemo-spcgtw-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: FESERVER
+              value: "fsdemo-frontend"
+            - name: FEPORT
+              value: "8080"
+          command: ['sh', '-c']
+          args:
+          - echo Prepare to fsdemo-spcgtw initialize..;
+            until nc -w 1 -z $FESERVER $FEPORT;
+            do echo fsdemo-spcgtw Waiting for fsdemo-frontend complete..; sleep 5; done;
+            echo fsdemo-frontend is ready.;
+      containers:
+        - name: fsdemo-spcgtw
+          image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-spcgtw
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8060
+          resources: {}
+          env:
+            - name: SERVERPORT
+              value: "8060"
+            - name: DEBUG_MODE
+              value: "false"
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fsdemo-spcgtw
+  labels:
+    app: fsdemo-spcgtw
+    service: fsdemo-spcgtw
+spec:
+  type: NodePort
+  selector:
+    app: fsdemo-spcgtw
+  ports:
+    - port: 8060
+      name: http
+      targetPort: 8060
+      nodePort: 31560
+

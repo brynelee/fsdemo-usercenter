@@ -188,7 +188,8 @@ spec:
             failureThreshold: 3
       volumes:
         - name: nfs-pv
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: mysql-pvc
         - name: mysql-initdb
           emptyDir: {}
 #        - name: mysql-config
