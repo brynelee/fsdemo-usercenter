@@ -74,7 +74,7 @@
 			<plugin>
 			    <groupId>org.jacoco</groupId>
 			    <artifactId>jacoco-maven-plugin</artifactId>
-			    <version>0.8.2</version>
+			    <version>0.8.6-SNAPSHOT</version>
 			    <executions>
 			        <execution>
 			            <goals>
@@ -92,7 +92,7 @@
 			    </executions>
 			</plugin>
 			<!-- added by Xiaodong end for test coverage report -->
-		
+
 			<!-- added by Xiaodong start for docker -->
 			<!-- We use the Resources plugin to filer Dockerfile and run.sh, it inserts actual JAR filename -->
 			<!-- The final Dockerfile will be created in target/dockerfile/Dockerfile -->
