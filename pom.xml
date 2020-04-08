@@ -69,6 +69,30 @@
 
 	<build>
 		<plugins>
+
+			<!-- added by Xiaodong start for test coverage report -->
+			<plugin>
+			    <groupId>org.jacoco</groupId>
+			    <artifactId>jacoco-maven-plugin</artifactId>
+			    <version>0.8.2</version>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>prepare-agent</goal>
+			            </goals>
+			        </execution>
+			        <!-- change phase from verify to test -->
+			        <execution>
+			            <id>report</id>
+			            <phase>test</phase>
+			            <goals>
+			                <goal>report</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+			<!-- added by Xiaodong end for test coverage report -->
+		
 			<!-- added by Xiaodong start for docker -->
 			<!-- We use the Resources plugin to filer Dockerfile and run.sh, it inserts actual JAR filename -->
 			<!-- The final Dockerfile will be created in target/dockerfile/Dockerfile -->
