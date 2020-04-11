@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fsdemo-confsrv
+  labels:
+    app: fsdemo-confsrv
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fsdemo-confsrv
+  template:
+    metadata:
+      labels:
+        app: fsdemo-confsrv
+        version: v1
+    spec:
+      containers:
+        - name: fsdemo-confsrv
+          image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-confsrv
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8889
+          resources: {}
+          env:
+            - name: SERVERPORT
+              value: "8889"
+            - name: DEBUG_MODE
+              value: "false"
+            - name: GITSERVERURI
+              value: "https://192.168.3.181:8443/r/fsdemo-configurations.git"
+            - name: GITSERVERUSERNAME
+              value: "xiaodong"
+            - name: GITSERVERPASSWORD
+              value: "time4fun"
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fsdemo-confsrv
+  labels:
+    app: fsdemo-confsrv
+    service: fsdemo-confsrv
+spec:
+  type: NodePort
+  selector:
+    app: fsdemo-confsrv
+  ports:
+    - port: 8889
+      name: http
+      nodePort: 30889
+
