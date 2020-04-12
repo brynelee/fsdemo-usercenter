@@ -67,7 +67,7 @@ services:
     ports:
       - "8084:8084"
     environment:
-      DEBUG_MODE: "true"
+      DEBUG_MODE: "false"
       SERVERPORT: "8084"
       JDBCURL: "oauth2db?setUnicode=true&characterEncoding=utf8"
       DBUSERNAME: "xiaodong"
