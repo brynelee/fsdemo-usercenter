@@ -43,16 +43,6 @@ spec:
               value: "8081"
             - name: DEBUG_MODE
               value: "true"
-            - name: JDBCURL
-              value: "usercenter?setUnicode=true&characterEncoding=utf8"
-            - name: DBUSERNAME
-              value: "xiaodong"
-            - name: DBPASSWORD
-              value: "time4@FUN"
-            - name: DBSERVER
-              value: "mysqldb"
-            - name: DBPORT
-              value: "3306"
       restartPolicy: Always
 
 ---
