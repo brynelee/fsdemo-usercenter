@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: fsdemo-usercenter
+  profiles:
+    active:
+      xdpc
+  cloud:
+    config:
+      uri: http://fsdemo-confsrv:8889
