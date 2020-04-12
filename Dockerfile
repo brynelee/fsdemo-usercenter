@@ -1,5 +1,5 @@
 # used for hub.docker.com automation build (CI)
-FROM maven:3.6.3-jdk-8
+FROM maven:3.6.3-jdk-14
 WORKDIR /usr/src/app
 COPY pom.xml .
 RUN mvn -B -e -C -T 1C org.apache.maven.plugins:maven-dependency-plugin:3.1.1:go-offline

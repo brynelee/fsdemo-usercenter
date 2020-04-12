@@ -33,8 +33,8 @@ spec:
             echo database is ready.;
       containers:
         - name: fsdemo-usercenter
-          image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-usercenter
-          imagePullPolicy: Always
+          image: xdorg1/fsdemo-usercenter
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
           resources: {}
@@ -42,7 +42,7 @@ spec:
             - name: SERVERPORT
               value: "8081"
             - name: DEBUG_MODE
-              value: "true"
+              value: "false"
       restartPolicy: Always
 
 ---
