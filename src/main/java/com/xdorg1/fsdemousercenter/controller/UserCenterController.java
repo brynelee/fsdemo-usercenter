@@ -13,6 +13,8 @@ import org.springframework.web.client.RestTemplate;
 
 @CrossOrigin
 @RestController
+//可以考虑使用前缀来简化每个方法的mapping，还没有尝试
+//@RequestMapping(value = "/test")
 public class UserCenterController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserCenterController.class);
