@@ -8,6 +8,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   thymeleaf:
     cache: false
+  mvc:
+    favicon:
+      enabled=false:
+
 debug: true
 fsdemo:
   fsdemo-gateway: fsdemo-spcgtw:8060 # should use fsdemo-gateway.fsdemo.com in k8s env.
