@@ -188,6 +188,7 @@ spec:
             failureThreshold: 3
       volumes:
         - name: nfs-pv
+# 使用本地存储是临时方案，使用prep目录下的配置是长久方案，已经验证成功
           emptyDir: {}
         - name: mysql-initdb
           emptyDir: {}
