@@ -10,5 +10,5 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   storageClassName: nfs
   nfs:
-    path: /var/nfsroot/mysql_new
-    server: 192.168.3.190
+    path: /var/nfs/mysql_new
+    server: xdt440scentosmini1
