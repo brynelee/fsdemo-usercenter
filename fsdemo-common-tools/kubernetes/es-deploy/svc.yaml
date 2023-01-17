@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch7
+  namespace: elasticsearch
+spec:
+  selector:
+    app: elasticsearch7
+  type: NodePort
+  ports:
+  - port: 9200
+    nodePort: 30900
+    targetPort: 9200
