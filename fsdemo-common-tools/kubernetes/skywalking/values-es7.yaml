@@ -1,0 +1,11 @@
+oap:
+  image:
+    tag: 9.2.0
+  storageType: elasticsearch
+
+ui:
+  image:
+    tag: 9.2.0
+
+elasticsearch:
+  imageTag: "7.6.2"
