@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transactionagentservice
+  labels:
+    app: transactionagentservice
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transactionagentservice
+  template:
+    metadata:
+      labels:
+        app: transactionagentservice
+        version: v1
+    spec:
+      volumes:
+        - name: skywalking-agent
+          emptyDir: { }
+      initContainers:
+        - name: fsdemo-tas-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
+          command: ['sh', '-c']
+          args:
+            - echo Prepare to apollo initialize..;
+              until nc -w 1 -z $DBSERVER $DBPORT;
+              do echo TAS Waiting for database initialization to complete..; sleep 5; done;
+              echo database is ready.;
+        - name: agent-container
+          image: apache/skywalking-java-agent:8.14.0-java8
+          volumeMounts:
+            - name: skywalking-agent
+              mountPath: /agent
+          command: [ "/bin/sh" ]
+          args: [ "-c", "cp -R /skywalking/agent /agent/" ]
+      containers:
+        - name: transactionagentservice
+          image: registry.cn-hangzhou.aliyuncs.com/xdorg1/transactionagentservice
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: skywalking-agent
+              mountPath: /skywalking
+          ports:
+            - containerPort: 8082
+          resources: {}
+          env:
+            - name: SERVERPORT
+              value: "8082"
+            - name: DEBUG_MODE
+              value: "false"
+            - name: JDBCURL
+              value: "transproddb?setUnicode=true&characterEncoding=utf8"
+            - name: DBUSERNAME
+              value: "xiaodong"
+            - name: DBPASSWORD
+              value: "time4@FUN"
+            - name: DBSERVER
+              value: "mysqldb"
+            - name: DBPORT
+              value: "3306"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-javaagent:/skywalking/agent/skywalking-agent.jar"
+            - name: SW_AGENT_NAME
+              value: fsdemo-transactionagentservice
+            - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+              # FQDN: servicename.namespacename.svc.cluster.local
+              value: skywalking-oap:11800
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: transactionagentservice
+  labels:
+    app: transactionagentservice
+    service: transactionagentservice
+spec:
+  #  type: NodePort
+  selector:
+    app: transactionagentservice
+  ports:
+    - port: 8082
+      name: http
+
