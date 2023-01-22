@@ -1,0 +1,20 @@
+oap:
+  image:
+    tag: 9.2.0
+  storageType: elasticsearch
+
+ui:
+  image:
+    tag: 9.2.0
+  service:
+    type: NodePort
+
+elasticsearch:
+  imageTag: 6.8.6
+  persistence:
+    enabled: true
+  volumeClaimTemplate:
+    resources:
+      requests:
+        storage: "5Gi"
+    storageClassName: nfs-storage
