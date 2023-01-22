@@ -1,3 +1,9 @@
+# 需要先apply:
+# 1. nfs-rbac.yaml
+# 2. nfs-provisioner-deploy.yaml
+# 3. nfs-storageclass.yaml
+# 然后再使用下述命令部署skywalking
+
 export SKYWALKING_RELEASE_NAME=skywalking  # change the release name according to your scenario
 export SKYWALKING_RELEASE_NAMESPACE=default  # change the namespace to where you want to install SkyWalking
 
