@@ -30,26 +30,27 @@ spec:
         app: xdpostgres
     spec:
       containers:
-        - env:
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: postgres-user-pwd
-                key: postgres-root-pwd
-          imagePullPolicy: IfNotPresent
-          name: postgres:14
-          volumeMounts:
-            - name: pg-pvc
-              mountPath: /var/lib/postgresql/data
-            - name: postgres-initdb
-              mountPath: /docker-entrypoint-initdb.d
-      volumes:
+      - name: xdpostgres
+        image: postgres:14
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-user-pwd
+              key: postgres-root-pwd
+        volumeMounts:
         - name: pg-pvc
-          persistentVolumeClaim:
-            claimName: postgres-pvc
+          mountPath: /var/lib/postgresql/data
         - name: postgres-initdb
-          configMap:
-            name: postgres-initdb-config
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: pg-pvc
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+      - name: postgres-initdb
+        configMap:
+          name: postgres-initdb-config
 ---
 apiVersion: v1
 kind: ConfigMap
