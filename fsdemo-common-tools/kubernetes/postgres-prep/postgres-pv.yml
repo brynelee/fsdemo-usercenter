@@ -10,5 +10,5 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   storageClassName: nfs
   nfs:
-    path: /var/nfs/postgres
-    server: xdserverubuntu
+    path: /var/nfs-postgres-data
+    server: xdserverk8ssingle
