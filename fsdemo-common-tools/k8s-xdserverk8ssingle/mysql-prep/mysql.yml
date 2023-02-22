@@ -1,0 +1,197 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqldb
+  labels:
+    app: mysqldb
+    service: mysqldb
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+  selector:
+    app: mysqldb
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysqldb
+  labels:
+    app: mysqldb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysqldb
+  template:
+    metadata:
+      labels:
+        app: mysqldb
+    spec:
+      initContainers:
+        - name: mysql-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-root-pwd
+          - name: MYSQL_TEST_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-test-user-pwd
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-app-user-pwd
+          command:
+            - sh
+            - "-c"
+            - |
+              set -ex
+              rm -rf /var/lib/mysql/lost+found
+              cat > /docker-entrypoint-initdb.d/a-mysql.sql <<EOF
+              USE mysql;
+              ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '$MYSQL_ROOT_PASSWORD';
+              ALTER USER 'xiaodong'@'%' IDENTIFIED WITH mysql_native_password BY '$MYSQL_PASSWORD';
+              CREATE DATABASE If NOT EXISTS transproddb CHARACTER SET utf8mb4;
+              CREATE DATABASE IF NOT EXISTS productprice CHARACTER SET utf8mb4;
+              GRANT ALL PRIVILEGES ON usercenter.* TO 'xiaodong'@'%' WITH GRANT OPTION;
+              GRANT ALL PRIVILEGES ON transproddb.* TO 'xiaodong'@'%' WITH GRANT OPTION;
+              GRANT ALL PRIVILEGES ON productprice.* TO 'xiaodong'@'%' WITH GRANT OPTION;
+              GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+              flush privileges;
+              EOF
+              cat > /docker-entrypoint-initdb.d/b-usercenter.sql <<EOF
+              USE usercenter;
+              SET FOREIGN_KEY_CHECKS = 0;
+              DROP TABLE IF EXISTS usertable;
+              CREATE TABLE usertable (
+              username varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+              password varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+              user_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+              token varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+              token_creation_time datetime DEFAULT NULL COMMENT 'Token创建时间',
+              mobile varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '手机号码文本',
+              status int(10) NOT NULL COMMENT '状态，1为正常',
+              email varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '电子邮件',
+              personal_id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '身份证号码',
+              PRIMARY KEY (user_id) USING BTREE,
+              UNIQUE KEY username (username) USING BTREE
+              ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+              INSERT INTO usertable VALUES ('xiaodong','123456',1,NULL,NULL,'13088888888',1,'bryne_lxd@sina.com','110101197512128888'),('dahai','666666',2,NULL,NULL,'13088888889',1,'dahai_88889999@sina.com','110101197812128889'),('hesheng','888888',3,NULL,NULL,'13088888890',1,'hesheng_88889999@sina.com','110101197812128890'),('xiaoming','999999',4,NULL,NULL,'13088888891',1,'xiaoming_88889999@sina.com','110101197812128891'),('xiaohu','000000',6,NULL,NULL,'13088888892',1,'xiaohu_88889999@163.com','110101197812128892');
+              SET FOREIGN_KEY_CHECKS = 1;
+              commit;
+              EOF
+              cat > /docker-entrypoint-initdb.d/c-transproddb.sql <<EOF
+              USE transproddb;
+              SET FOREIGN_KEY_CHECKS = 0;
+              DROP TABLE IF EXISTS product;
+              CREATE TABLE product  (
+              product_id int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '产品ID',
+              product_name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '产品名称',
+              total_amount int(10) UNSIGNED NOT NULL COMMENT '总份额',
+              amount_sold int(10) UNSIGNED NOT NULL COMMENT '已销售份额',
+              description varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
+              institution_code varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '机构编码',
+              category varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '产品一级分类',
+              unit_price decimal(10, 2) UNSIGNED NOT NULL COMMENT '份额单价',
+              isDynamicPrice tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否是动态价格',
+              PRIMARY KEY (product_id) USING BTREE
+              ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+              INSERT INTO product VALUES (1, 'win1', 500000, 0, '天天赢1号', '000001', 'retail-personal', 1.50, 0);
+              INSERT INTO product VALUES (2, 'win2', 100000, 0, '日日盈1号', '000002', 'retail-private', 2.00, 1);
+              INSERT INTO product VALUES (3, 'win3', 500000, 0, '天天赢2号', '000003', 'retail-sme', 1.20, 1);
+              INSERT INTO product VALUES (4, 'win4', 1000000, 0, '日日盈2号', '000002', 'retail-private', 3.00, 0);
+              INSERT INTO product VALUES (5, 'win5', 5000000, 0, '天天赢3号', '000003', 'retail-sme', 1.40, 0);
+              SET FOREIGN_KEY_CHECKS = 1;
+              commit;
+              EOF
+              cat > /docker-entrypoint-initdb.d/d-productprice.sql <<EOF
+              USE productprice
+              SET FOREIGN_KEY_CHECKS = 0;
+              DROP TABLE IF EXISTS productpricetable;
+              CREATE TABLE productpricetable  (
+                product_id int(10) UNSIGNED NOT NULL COMMENT '产品ID',
+                product_name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '产品名称',
+                product_price decimal(10, 2) DEFAULT NULL COMMENT '产品价格',
+                update_time datetime(0) DEFAULT NULL COMMENT '产品价格更新时间',
+                PRIMARY KEY (product_id) USING BTREE
+              ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+              INSERT INTO productpricetable VALUES (1, 'win1', 2.50, NULL);
+              INSERT INTO productpricetable VALUES (2, 'win2', 3.10, '2020-02-17 16:37:30');
+              INSERT INTO productpricetable VALUES (3, 'win3', 50.00, NULL);
+              INSERT INTO productpricetable VALUES (4, 'win4', NULL, '2020-02-16 16:37:20');
+              INSERT INTO productpricetable VALUES (5, 'win5', NULL, NULL);
+              SET FOREIGN_KEY_CHECKS = 1;
+              EOF
+          volumeMounts:
+            - name: nfs-pv
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d
+      containers:
+        - image: mysql:8.0
+          name: mysqldb
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-root-pwd
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-user-pwd
+                key: mysql-app-user-pwd
+          - name: MYSQL_USER
+            value: xiaodong
+          - name: MYSQL_DATABASE
+            value: usercenter
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: nfs-pv
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d
+#            - name: mysql-config
+#              mountPath: /etc/mysql/conf.d
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - MYSQL_PWD="${MYSQL_ROOT_PASSWORD}"
+                - mysql -h 127.0.0.1 -u root -e "SELECT 1"
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - MYSQL_PWD="${MYSQL_ROOT_PASSWORD}"
+                - mysql -h 127.0.0.1 -u root -e "SELECT 1"
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+      volumes:
+        - name: nfs-pv
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+        - name: mysql-initdb
+          emptyDir: {}
+#        - name: mysql-config
+#          configMap:
+#            name: mysql-config
