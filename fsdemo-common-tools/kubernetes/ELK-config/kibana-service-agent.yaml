@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-agent-svc				#service的名称叫做outside-agent-svc
+  namespace: default
+spec:
+  ports:
+  - name: kibana-agent-port				#service端口的名称
+    port: 5601							#service的端口
+    protocol: TCP						#端口协议
+#   targetPort: 80						#目标端口可以不定义，因为我们代理的不是pod，不定义targetPort，其默认等于port
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: kibana-agent-svc				#endpoint的名称一定要与service的名称一致
+  namespace: default
+subsets:
+- addresses:
+  - ip: 192.168.3.73					#定义外部服务地址
+  ports:
+  - port: 5601							#外部服务的端口
+    name: kibana-agent-port				#端口的name，这个名称一定要与service端口的名称
+    protocol: TCP						#端口协议，这个协议一定要与service的端口协议一致
+
