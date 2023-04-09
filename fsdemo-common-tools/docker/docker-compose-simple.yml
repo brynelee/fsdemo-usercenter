@@ -1,0 +1,104 @@
+version: '3'
+services:
+  fsdemo-frontend:
+    image:   registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-frontend:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: /entrypoint.sh -d fsdemo-usercenter:8081,transactionagentservice:8082,fsdemo-articlenodejs:8087 -c "nginx-debug -g 'daemon off;'"
+  fsdemo-usercenter:
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-usercenter
+    ports:
+      - "8081:8081"
+    environment:
+      DEBUG_MODE: "false"
+      SERVERPORT: "8081"
+      JDBCURL: "usercenter?setUnicode=true&characterEncoding=utf8"
+      DBUSERNAME: "xiaodong"
+      DBPASSWORD: "time4@FUN"
+      DBSERVER: "mysqldb"
+      DBPORT: "3306"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: "/entrypoint.sh -d mysqldb:3306 -c ./run.sh;"
+  transactionagentservice:
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/transactionagentservice
+    ports:
+      - "8082:8082"
+    environment:
+      DEBUG_MODE: "false"
+      SERVERPORT: "8082"
+      JDBCURL: "transproddb?setUnicode=true&characterEncoding=utf8"
+      DBUSERNAME: "xiaodong"
+      DBPASSWORD: "time4@FUN"
+      DBSERVER: "mysqldb"
+      DBPORT: "3306"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: "/entrypoint.sh -d mysqldb:3306 -c ./run.sh"
+  fsdemo-priceservice:
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-priceservice
+    ports:
+      - "8083:8083"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: "/entrypoint.sh -d mysqldb:3306 -c fsdemo-priceservice"
+  fsdemo-authsrv:
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-authsrv
+    ports:
+      - "8084:8084"
+    environment:
+      DEBUG_MODE: "false"
+      SERVERPORT: "8084"
+      JDBCURL: "oauth2db?setUnicode=true&characterEncoding=utf8"
+      DBUSERNAME: "xiaodong"
+      DBPASSWORD: "time4@FUN"
+      DBSERVER: "mysqldb"
+      DBPORT: "3306"
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+    command: "/entrypoint.sh -d mysqldb:3306 -c ./run.sh;"
+  fsdemo-emplyservice:
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-emplyservice
+    ports:
+      - "8086:8086"
+    #command: "/usr/src/emplyservice/emply"
+    depends_on:
+      xdpostgres:
+        condition: service_started
+  fsdemo-articlenodejs:
+    image: registry.cn-hangzhou.aliyuncs.com/xdorg1/fsdemo-articlenodejs
+    ports:
+      - "8087:8087"
+    #command: "node dist/src/main"
+    depends_on:
+      xdpostgres:
+        condition: service_started
+  mysqldb:
+    image: mysql:8.0.19
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "time4@FUN"
+      MYSQL_USER: 'xiaodong'
+      MYSQL_PASS: 'time4@FUN'
+    restart: always
+    volumes:
+      - "./init:/docker-entrypoint-initdb.d/"
+  xdpostgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "p0stgres"
+    restart: always
+    volumes:
+      - "./postgres_init:/docker-entrypoint-initdb.d"
+      - "/home/xiaodong/db_data/pg_docker_compose_data:/var/lib/postgresql/data"
+#      - "./db:/var/lib/mysql"
+#      - "./conf/my.cnf:/etc/my.cnf"
+
+
+
+
