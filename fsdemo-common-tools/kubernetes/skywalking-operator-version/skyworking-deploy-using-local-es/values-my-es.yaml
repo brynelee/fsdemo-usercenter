@@ -1,0 +1,22 @@
+# Default values for skywalking.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+oap:
+  image:
+    tag: 9.3.0
+  storageType: elasticsearch
+
+ui:
+  image:
+    tag: 9.3.0
+  service:
+    type: NodePort
+
+elasticsearch:
+  enabled: false
+  config:               # For users of an existing elasticsearch cluster,takes effect when `elasticsearch.enabled` is false
+    host: elasticsearch-agent-svc
+    port:
+      http: 9200
+
