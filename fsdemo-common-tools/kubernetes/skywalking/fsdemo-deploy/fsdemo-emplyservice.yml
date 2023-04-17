@@ -37,7 +37,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
-              value: "http://skywalking-oap:11800"
+              value: "http://skywalking-skywalking-helm-oap:11800"
           ports:
             - containerPort: 8086
           resources: {}
