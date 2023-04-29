@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fsdemo-frontend
+  labels:
+    app: fsdemo-frontend
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fsdemo-frontend
+  template:
+    metadata:
+      labels:
+        app: fsdemo-frontend
+        version: v1
+    spec:
+      initContainers:
+        - name: fsdemo-frontend-init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: UCSERVER
+              value: "fsdemo-usercenter"
+            - name: UCPORT
+              value: "8081"
+            - name: TASSERVER
+              value: "transactionagentservice"
+            - name: TASPORT
+              value: "8082"
+          command: ['sh', '-c']
+          args:
+            - echo Prepare to fsdemo-usercenter initialize..;
+              until nc -w 1 -z $UCSERVER $UCPORT;
+              do echo Waiting for usercenter initialization to complete..; sleep 5; done;
+              echo usercenter is ready.;
+            - echo Prepare to transactionagentservice initialize..;
+              until nc -w 1 -z $TASSERVER $TASPORT;
+              do echo Waiting for transactionagentservice initialization to complete..; sleep 5; done;
+              echo transactionagentservice is ready.;
+      containers:
+        - name: fsdemo-frontend
+          image: xdt440subuntuharbor.xdli.com/xdorg1/fsdemo-frontend
+          imagePullPolicy: Always
+          command: [nginx-debug, '-g', 'daemon off;']
+          ports:
+            - containerPort: 8080
+          resources: {}
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fsdemo-frontend
+  labels:
+    app: fsdemo-frontend
+    service: fsdemo-frontend
+spec:
+  type: NodePort
+  selector:
+    app: fsdemo-frontend
+  ports:
+    - port: 8080
+      name: http
+      targetPort: 8080
+      nodePort: 31580
