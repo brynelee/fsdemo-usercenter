@@ -20,7 +20,7 @@ metadata:
   namespace: default
 subsets:
 - addresses:
-  - ip: 192.168.3.73					#定义外部服务地址
+  - ip: 192.168.3.200					#定义外部服务地址
   ports:
   - port: 9200							#外部服务的端口
     name: es-agent-port				#端口的name，这个名称一定要与service端口的名称
