@@ -53,6 +53,8 @@ spec:
               value: "mysqldb"
             - name: DBPORT
               value: "3306"
+            - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+              value: "skywalking-skywalking-helm-oap:11800"
       restartPolicy: Always
 
 ---
